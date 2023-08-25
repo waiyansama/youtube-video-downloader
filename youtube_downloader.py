@@ -5,6 +5,7 @@ import sys
 # Available Resolution
 # “720p”, “480p”, “360p”, “240p”, “144p”
 
+
 def main() -> None:
     yt = validate(input("Link: "))
     stream = yt.streams  # type: ignore[attr-defined]
@@ -12,7 +13,7 @@ def main() -> None:
     reso: str = input("Select Resolution: ")
     # selected video file
     hd: list = stream.filter(res=f"{reso}", progressive=True,
-                       type="video")
+                             type="video")
     # download
     hd[0].download()
 
