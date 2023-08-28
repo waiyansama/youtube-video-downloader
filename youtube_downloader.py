@@ -1,32 +1,39 @@
-from pytube import YouTube, exceptions, Stream  # type: ignore
-import telegram
+from pytube import YouTube, exceptions
 import sys
 
-# Available Resolution
-# “720p”, “480p”, “360p”, “240p”, “144p”
+available_resolution = ["720p", "480p", "360p", "240p", "144p"]
 
 
 def main() -> None:
     yt = validate(input("Link: "))
-    stream = yt.streams  # type: ignore[attr-defined]
-    # select resolution
-    reso: str = input("Select Resolution: ")
+    streams = yt.streams
+    reso: str = ""
+    # Ensure reso is valid
+    while True:
+        # select resolution
+        reso = input("Select Resolution: ")
+        if reso in available_resolution:
+            break
+
     # selected video file
-    hd: list = stream.filter(res=f"{reso}", progressive=True,
-                             type="video")
+    hd: list = streams.filter(res=f"{reso}", progressive=True, type="video")
     # download
-    hd[0].download()
+    hd.first().download()
 
 
 def validate(link: str) -> object:
     try:
         yt = YouTube(f"{link}")
         yt.bypass_age_gate()
-        return yt
     except exceptions.RegexMatchError:
         sys.exit("Invalid Link")
     except exceptions.AgeRestrictedError:
         sys.exit("Age restricted")
+    except exceptions.VideoUnavailable:
+        sys.exit("Video unavailable")
+    except:
+        sys.exit("Opps! Something went wrong.")
+    return yt
 
 
 if __name__ == "__main__":
